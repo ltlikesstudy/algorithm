@@ -1,5 +1,4 @@
 
-<html>
 //Given an array of integers, every element appears k times except for one. 
 //Find that single one who appears l times.
 public class Solution {
@@ -23,4 +22,3 @@ We need a array x[i] with size k for saving the bits appears i times. For every 
 In the equation, the first part indicates the the carries from previous one. The second part indicates the bits not carried to next one.
 Then the algorithms run in O(kn) and the extra space O(k).
 */
-</html>
