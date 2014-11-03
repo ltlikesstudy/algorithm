@@ -17,13 +17,16 @@ var Base = {
 }
 */
 
-var $ = function(){
-	return new Base();
+var $ = function(_this){
+	return new Base(_this);
 }
 
-function Base(){
+function Base(_this){
 	// creat a array
 	this.elements = [];
+	if (_this != undefined){
+		this.elements[0] = _this;
+	}
 }
 
 
@@ -114,6 +117,16 @@ Base.prototype.addRule = function(num,selectorText,cssText,position){
 	return this;
 }
 
+Base.prototype.removeRule = function(num,index){
+	var sheet = document.styleSheets[num];
+	if (typeof sheet.deleteRule != 'undefined') {//W3C
+		sheet.deleteRule(index);
+	}else if (typeof sheet.removeRule != 'undefined'){//IE
+		sheet.removeRule(index);
+	}
+	return this;
+}
+
 Base.prototype.html = function(str) {
 	for (var i = 0; i < this.elements.length; i++){
 		if (arguments.length == 0) {
@@ -130,3 +143,38 @@ Base.prototype.click = function(fn){
 	}
 	return this;
 }
+
+Base.prototype.hover = function(over,out){
+	for (var i = 0; i < this.elements.length; i++){
+		this.elements[i].onmouseover = over;
+		this.elements[i].onmouseout = out;
+	}
+	return this;
+}
+Base.prototype.show = function(){
+	for (var i = 0; i < this.elements.length; i++){
+		this.elements[i].style.display = 'block';
+	}
+	return this;
+}
+Base.prototype.hide = function(){
+	for (var i = 0; i < this.elements.length; i++){
+		this.elements[i].style.display = 'none';
+	}
+	return this;
+}
+Base.prototype.center = function(width,height){
+	var top = (document.documentElement.clientHeight - width) / 2;
+	var left = (document.documentElement.clientWidth - height) / 2;
+	for (var i = 0; i < this.elements.length; i++){
+		this.elements[i].style.top = top + 'px';
+		this.elements[i].style.left = left + 'px';	
+	}
+	return this;
+}
+Base.prototype.resize = function(fn){
+	window.onresize = fn;	
+	return this;
+}
+
+

@@ -9,11 +9,6 @@ window.onload = function(){
 	alert(Base.getId('box').innerHTML);
 	alert(Base.getName('sex')[0].value);
 	alert(Base.getTag('p')[0].innerHTML);
-}
-*/
-
-
-window.onload = function(){
 	//var base = new Base();
 	/*base.getId('box').css('color','red').css('backgroundColor','black').html('pox').click(function(){
 		alert('a');
@@ -23,6 +18,16 @@ window.onload = function(){
 		alert('a');
 	});
 	//$().getTag('p').css('color','blue').css('backgroundColor','yellow');
-	$().getClass('a','aaa').css('color','pink');*/
+	$().getClass('a','aaa').css('color','pink');
 	//$().addRule(0,'body','background:red',0);
+}
+*/
+
+
+window.onload = function(){
+	$().getClass('member').hover(function(){
+		$().getTag('ul').show();
+	},function(){
+		$().getTag('ul').hide();
+	});
 }
