@@ -78,11 +78,7 @@ Base.prototype.getElement = function(num){
 Base.prototype.css = function(attr,value){
 	for (var i = 0; i < this.elements.length; i++){
 		if (arguments.length == 1) {
-			if (typeof window.getComputedStyle != 'undefined') {//W3C
-				return window.getComputedStyle(this.elements[i],null)[attr];
-			}else if (typeof this.elements[i].currentStyle != 'undefined'){//IE
-				return this.elements[i].currentStyle[attr];
-			}
+			getStyle(elements[i],attr);
 		}
 		this.elements[i].style[attr] = value;
 	}
@@ -91,7 +87,7 @@ Base.prototype.css = function(attr,value){
 
 Base.prototype.addClass = function(className){
 	for (var i = 0; i < this.elements.length; i++){
-		if (!this.elements[i].className.match(new RegExp('(\\s|^)'+className+'(\\s|^)'))){
+		if (!hasClass(elements[i],className)){
 			this.elements[i].className += ' '+ className;
 		}
 	}
@@ -100,7 +96,7 @@ Base.prototype.addClass = function(className){
 
 Base.prototype.removeClass = function(className){
 	for (var i = 0; i < this.elements.length; i++){
-		if (this.elements[i].className.match(new RegExp('(\\s|^)'+className+'(\\s|^)'))){
+		if (hasClass(elements[i],className)){
 			this.elements[i].className = this.elements[i].className.replace (new RegExp('(\\s|^)'+className+'(\\s|^)'),' ');
 		}
 	}
@@ -109,21 +105,13 @@ Base.prototype.removeClass = function(className){
 
 Base.prototype.addRule = function(num,selectorText,cssText,position){
 	var sheet = document.styleSheets[num];
-	if (typeof sheet.insertRule != 'undefined') {//W3C
-		sheet.insertRule(selectorText + "{" + cssText + "}",position);
-	}else if (typeof sheet.addRule != 'undefined'){//IE
-		sheet.addRule(selectorText,cssText,position);
-	}
+	insertRule(sheet,selectorText,cssText,position);
 	return this;
 }
 
 Base.prototype.removeRule = function(num,index){
 	var sheet = document.styleSheets[num];
-	if (typeof sheet.deleteRule != 'undefined') {//W3C
-		sheet.deleteRule(index);
-	}else if (typeof sheet.removeRule != 'undefined'){//IE
-		sheet.removeRule(index);
-	}
+	removeRule(sheet,index);
 	return this;
 }
 
@@ -173,7 +161,82 @@ Base.prototype.center = function(width,height){
 	return this;
 }
 Base.prototype.resize = function(fn){
-	window.onresize = fn;	
+	for (var i = 0; i < this.elements.length; i++){
+		var element = this.elements[i];
+		window.onresize = function(){
+			fn();
+			if (element.offsetLeft > getInner().width - element.offsetWidth){
+				element.style.left = getInner().width - element.offsetWidth + 'px';
+			}
+			if (element.offsetTop > getInner().height - element.offsetHeight){
+				element.style.top = getInner().height - element.offsetHeight + 'px';
+			}
+			
+		};
+	}
+		
+	return this;
+}
+
+Base.prototype.lock = function(){
+	for (var i = 0; i < this.elements.length; i++){
+		this.elements[i].style.width = getInner().width + 'px';
+		this.elements[i].style.height = getInner().height + 'px';
+		this.elements[i].style.display = 'block';
+		document.documentElement.style.overflow = 'hide';	
+	}
+	return this;
+}
+Base.prototype.unlock = function(){
+	for (var i = 0; i < this.elements.length; i++){
+		this.elements[i].style.display = 'none';
+		document.documentElement.style.overflow = 'auto';
+	}
+	return this;
+}
+
+Base.prototype.drag = function(){
+	for (var i = 0; i < this.elements.length; i++){
+		this.elements[i].onmousedown = function(e){
+			preDef(e);
+			var e = getEvent(e);
+			var _this = this;
+			var diffX = e.clientX - _this.offsetLeft;
+			var diffY = e.clientY - _this.offsetTop;
+			
+			if (typeof _this.setCapture != 'undefined'){
+				_this.setCapture();
+			}
+			document.onmousemove = function(e){
+				var e = getEvent(e);
+				//e.ClientX e.ClientY
+				var left = e.clientX - diffX;
+				var top = e.clientY - diffY;
+				var totalleft = getInner().width;
+				var totaltop = getInner().height;
+				
+				if (left < 0) {
+					left = 0;
+				}else if (left > totalleft - _this.offsetLeft){
+					left = totalleft - _this.offsetLeft;
+				}
+				if (top < 0) {
+					top = 0;
+				}else if (top > totaltop - _this.offsetTop){
+					left = totaltop - _this.offsetTop;
+				}
+				_this.style.left = left + 'px';
+				_this.style.top = top + 'px';
+			}
+			document.onmouseup = function(){
+				this.onmousemove = null;
+				this.onmouseup = null;
+				if (_this.releaseCapture){
+					_this.releaseCapture();
+				}
+			}
+		};
+	}
 	return this;
 }
 
