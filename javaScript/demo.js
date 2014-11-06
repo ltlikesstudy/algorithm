@@ -23,11 +23,17 @@ window.onload = function(){
 }
 */
 
-
+/*
 window.onload = function(){
 	$().getClass('member').hover(function(){
 		$().getTag('ul').show();
 	},function(){
 		$().getTag('ul').hide();
 	});
+}*/
+
+
+
+window.onload = function(){
+	
 }

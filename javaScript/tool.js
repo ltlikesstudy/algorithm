@@ -1,5 +1,5 @@
 function getInner(){
-	if (type window.innerWidth != 'undefined'){
+	if (typeof window.innerWidth != 'undefined'){
 		return{
 			width:window.innerWidth,
 			height:window.innerHeight
@@ -39,3 +39,24 @@ function removeRule(sheet,index){
 		sheet.removeRule(index);
 	}
 }
+
+function getEvent(event){
+	return event || window.event;
+}
+function preDef(event){
+	var e = getEvent(event);
+	if (typeof e.preventDefault != 'undefined'){ //W3C
+		e.preventDefault();
+	}else{//IE
+		e.returnValue = false;
+	}
+}
+
+function trim(str){
+	return str.replace('/(^\s*)|(\s*$)/g',"");
+}
+
+function scrollTop(){
+	document.body.scrollTop = 0;
+	document.documentElement.scrollTop = 0;
+};

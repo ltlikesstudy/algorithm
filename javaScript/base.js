@@ -134,8 +134,10 @@ Base.prototype.click = function(fn){
 
 Base.prototype.hover = function(over,out){
 	for (var i = 0; i < this.elements.length; i++){
-		this.elements[i].onmouseover = over;
-		this.elements[i].onmouseout = out;
+		//this.elements[i].onmouseover = over;
+		//this.elements[i].onmouseout = out;
+		addEvent(this.elements[i], 'mouseover',over);
+		addEvent(this.elements[i], 'mouseout',out);
 	}
 	return this;
 }
@@ -152,8 +154,8 @@ Base.prototype.hide = function(){
 	return this;
 }
 Base.prototype.center = function(width,height){
-	var top = (document.documentElement.clientHeight - width) / 2;
-	var left = (document.documentElement.clientWidth - height) / 2;
+	var top = (getInner().height - 250) / 2;
+	var left = (getInner().width - 350) / 2;
 	for (var i = 0; i < this.elements.length; i++){
 		this.elements[i].style.top = top + 'px';
 		this.elements[i].style.left = left + 'px';	
@@ -163,7 +165,7 @@ Base.prototype.center = function(width,height){
 Base.prototype.resize = function(fn){
 	for (var i = 0; i < this.elements.length; i++){
 		var element = this.elements[i];
-		window.onresize = function(){
+		/*window.onresize = function(){
 			fn();
 			if (element.offsetLeft > getInner().width - element.offsetWidth){
 				element.style.left = getInner().width - element.offsetWidth + 'px';
@@ -172,7 +174,16 @@ Base.prototype.resize = function(fn){
 				element.style.top = getInner().height - element.offsetHeight + 'px';
 			}
 			
-		};
+		};*/
+		addEvent(window,'resize',function(){
+			fn();
+			if (element.offsetLeft > getInner().width - element.offsetWidth){
+				element.style.left = getInner().width - element.offsetWidth + 'px';
+			}
+			if (element.offsetTop > getInner().height - element.offsetHeight){
+				element.style.top = getInner().height - element.offsetHeight + 'px';
+			}
+		})
 	}
 		
 	return this;
@@ -184,6 +195,17 @@ Base.prototype.lock = function(){
 		this.elements[i].style.height = getInner().height + 'px';
 		this.elements[i].style.display = 'block';
 		document.documentElement.style.overflow = 'hide';	
+		/*addEvent(this.elements[i],'mousedown',function(e){
+			e.preventDefault();
+			addEvent(document,'mousemove',function(e){
+				e.preventDefault();
+			});
+		});*/
+		/*window.onscroll = fucntion(){
+			document.body.scrollTop = 0;
+			document.documentElement.scrollTop = 0;
+		}*/
+		addEvent(window,'scroll',scrollTop());
 	}
 	return this;
 }
@@ -191,25 +213,37 @@ Base.prototype.unlock = function(){
 	for (var i = 0; i < this.elements.length; i++){
 		this.elements[i].style.display = 'none';
 		document.documentElement.style.overflow = 'auto';
+		removeEvent(window,'scroll',scrollTop());
 	}
 	return this;
 }
 
 Base.prototype.drag = function(){
 	for (var i = 0; i < this.elements.length; i++){
-		this.elements[i].onmousedown = function(e){
-			preDef(e);
-			var e = getEvent(e);
+		//this.elements[i].onmousedown = function(e){
+		addEvent(this.elements[i],'mousedown',function(e){
+			//preDef(e);
+			//
+			if (trim(this.innerHTML).length == 0){
+				e.preventDefault();
+			}
+			//var e = getEvent(e);
 			var _this = this;
 			var diffX = e.clientX - _this.offsetLeft;
 			var diffY = e.clientY - _this.offsetTop;
 			
-			if (typeof _this.setCapture != 'undefined'){
-				_this.setCapture();
+			//e.target; //W3C
+			//e.srcElement; //IE
+			
+			if (e.target.tagName == 'H2'){
+				addEvent(document,'mousemove',move);
+				addEvent(document,'mouseup',up);	
+			}else{
+				removeEvent(document,'mousemove',move);
+				removeEvent(document,'mouseup',up);
 			}
-			document.onmousemove = function(e){
-				var e = getEvent(e);
-				//e.ClientX e.ClientY
+			
+			function move(e){
 				var left = e.clientX - diffX;
 				var top = e.clientY - diffY;
 				var totalleft = getInner().width;
@@ -227,15 +261,24 @@ Base.prototype.drag = function(){
 				}
 				_this.style.left = left + 'px';
 				_this.style.top = top + 'px';
+				if (typeof _this.setCapture != 'undefined'){
+					_this.setCapture();
+				}
+
 			}
-			document.onmouseup = function(){
-				this.onmousemove = null;
+			//document.onmousemove = function(e){
+				//var e = getEvent(e);
+				//e.ClientX e.ClientY
+			
+			function up(){
+				remove(document,'mousemove',move);
+					//this.onmousemove = null;
 				this.onmouseup = null;
 				if (_this.releaseCapture){
 					_this.releaseCapture();
 				}
 			}
-		};
+		});
 	}
 	return this;
 }
