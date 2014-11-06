@@ -28,21 +28,56 @@
 
 
 
-Base.prototype.drag = function(){
+/*
+Base.prototype.extend = function(name,fn){
+	Base.prototype[name] = fn;
+} from base.js
+
+var login = $().getId('login')
+login.drag  //from demo
+
+login.drag([$().getTagName('h2').getElemets(0),$().getTagName('span').getElement(0)]);
+	
+*/
+
+
+$().extend(drag,function(tags){
 	for (var i = 0; i < this.elements.length; i++){
-		this.elements[i].onmousedown = function(e){
-			preDef(e);
-			var e = getEvent(e);
+		//this.elements[i].onmousedown = function(e){
+		addEvent(this.elements[i],'mousedown',function(e){
+			//preDef(e);
+			//
+			if (trim(this.innerHTML).length == 0){
+				e.preventDefault();
+			}
+			//var e = getEvent(e);
 			var _this = this;
 			var diffX = e.clientX - _this.offsetLeft;
 			var diffY = e.clientY - _this.offsetTop;
 			
-			if (typeof _this.setCapture != 'undefined'){
-				_this.setCapture();
+			//e.target; //W3C
+			//e.srcElement; //IE
+			var flag = false;
+			
+			//tags.length = 2;
+			for (var i = 0; i < tags.length; i++){
+				if(e.target == tags[i]){
+					flag = true;
+					break;
+				}
 			}
-			document.onmousemove = function(e){
-				var e = getEvent(e);
-				//e.ClientX e.ClientY
+			
+			
+			//if (e.target.tagName == 'H2'){
+			if(flag){
+				addEvent(document,'mousemove',move);
+				addEvent(document,'mouseup',up);	
+			}else{
+				removeEvent(document,'mousemove',move);
+				removeEvent(document,'mouseup',up);
+			}
+			
+			function move(e){
 				var left = e.clientX - diffX;
 				var top = e.clientY - diffY;
 				var totalleft = getInner().width;
@@ -60,28 +95,25 @@ Base.prototype.drag = function(){
 				}
 				_this.style.left = left + 'px';
 				_this.style.top = top + 'px';
+				if (typeof _this.setCapture != 'undefined'){
+					_this.setCapture();
+				}
+
 			}
-			document.onmouseup = function(){
-				this.onmousemove = null;
+			//document.onmousemove = function(e){
+				//var e = getEvent(e);
+				//e.ClientX e.ClientY
+			
+			function up(){
+				remove(document,'mousemove',move);
+					//this.onmousemove = null;
 				this.onmouseup = null;
 				if (_this.releaseCapture){
 					_this.releaseCapture();
 				}
 			}
-		};
+		});
 	}
 	return this;
-}
-
-function getInner(){
-	if (typeof window.innerWidth != 'undefined'){
-		return{
-			width:window.innerWidth,
-			height:window.innerHeight
-		}
-	}else{
-		return{
-			width:document.documentElement.clientWidth,
-			height:document.documentElement.clientHeight
-		}
-}
+	//
+});
