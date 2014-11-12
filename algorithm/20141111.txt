@@ -1,0 +1,406 @@
+ public class FindNumbers{
+     public int[] findNum(int[] num) {
+         // result[0] is smallerst
+         // result[1] is second largest
+         // result[2] is largest
+         int[] result = new int[3];
+         if (num == null || num.length == 0) {
+             return result;
+         }
+         if (num.length == 1) {
+             result[0] = num[0];
+             result[1] = num[0];
+             result[2] = num[0];
+             return result;
+         }
+         int max = num[0] > num[1] ? num[0] : num[1];
+         int min = num[0] > num[1] ? num[1] : num[0];
+         int secondmax = min;
+         for (int i = 2; i < num.length; i++) {
+             if (num[i] > max) {
+                 max = num[i];
+             }
+             if (num[i] > secondmax && num[i] < max) {
+                 secondmax = num[i];
+             }
+             if (num[i] < min) {
+                 min = num[i];
+             }
+         }
+         result[0] = min;
+         result[1] = secondmax;
+         result[2] = max;
+         return result;
+     }
+ }
+ 
+ public class ArrayToQueue {  
+     private static final int capacity = 5;  
+     int array[] = new int[capacity];  
+     int size = 0;  
+     int top = -1;  
+     int rear = 0;  
+  
+     public void offer(int element) {  
+         if (top < capacity - 1) {  
+             top++;  
+             array[top] = element;   
+         } else {  
+             System.out.println("Overflow !");  
+         }  
+     }  
+  
+     public Obj poll() {  
+         if (top >= rear) {  
+             rear++;  
+             System.out.println("Pop operation done !");  
+             display();  
+         } else {  
+             System.out.println("Underflow !");  
+         }  
+     }  
+  
+     public void peek() {  
+         if (top >= rear) {  
+             System.out.println("Elements in Queue : ");  
+             for (int i = rear; i <= top; i++) {  
+                 System.out.println(arr[i]);  
+             }  
+         }  
+     }  
+  
+ public static void main(String[] args) {  
+  QueueDemo queueDemo = new QueueDemo();  
+  queueDemo.pop();  
+  queueDemo.push(23);  
+  queueDemo.push(2);  
+  queueDemo.push(73);  
+  queueDemo.push(21);  
+  queueDemo.pop();  
+  queueDemo.pop();  
+  queueDemo.pop();  
+  queueDemo.pop();  
+ }  
+  
+}  
+ 
+ 
+ 
+  
+public class ArrayQueue<T> implements Queue<T>{  
+  
+    private T[] data;  
+    private int size;
+    private int front;
+    private int rear;
+    public ArrayQueue() {  
+        data = (T[]) new Object[10];  
+        size = 0;  
+        front =0;  
+        rear = 0;  
+    }  
+    @Override  
+    public void add(T t) {  
+        if(isFull())  
+        {  
+            resize();  
+            front = 0;  
+        }  
+        rear = (front+size)%data.length;  
+        System.out.println(rear);  
+        data[rear] = t;  
+        size++;  
+    }  
+  
+    @Override  
+    public T remove() {  
+         if (isEmpty()) {    
+                throw new RuntimeException("队列为空!");    
+            }    
+            T tempData = data[front];    
+            data[front] = null;    
+            //思考一下这里有必要进行除法运算吗?  
+            
+            front = (front + 1) % (data.length);  
+            size--;    
+            return tempData;    
+    }  
+  
+    @Override  
+    public int size() {  
+        return size;  
+    }  
+  
+    @Override  
+    public boolean isEmpty() {  
+        return size == 0;  
+    }  
+  
+    @Override  
+    public T front() {  
+         if (isEmpty()) {    
+                throw new RuntimeException("队列为空!");    
+            }    
+            return data[front];  
+    }  
+  
+    /** 
+     * 判断当前队列是否已满 
+     * @return*/  
+    public boolean isFull()  
+    {  
+        return size == data.length;  
+    }  
+    /** 
+     * 扩容，2倍 
+     * */  
+    public void resize()  
+    {  
+        /*注意重新扩容的时候并不需要去设置size 
+         * 队列的大小并不能通过数组的大小直观的显示出来。 
+         * 但是栈就可以直观的通过数组的大小显示出来*/  
+        T[] tmp = (T[]) new Object[data.length*2];  
+        System.arraycopy(data, 0, tmp, 0, data.length);    
+        data = tmp;    
+        tmp = null;//引用置为空，便于gc处理    
+    }  
+    public static void main(String[] args) {  
+        ArrayQueue<String> q = new ArrayQueue<String>();    
+        q.add("a");    
+        q.add("b");    
+        q.add("c");    
+        q.add("d");    
+        q.add("e");    
+        q.add("f");    
+        q.add("g");    
+        q.add("h");    
+        q.add("i");    
+        q.add("j");         
+        q.add("k");    
+        q.add("l");    
+        q.add("m");    
+        while( !q.isEmpty() ){    
+            String temp = q.remove();    
+            System.out.println(temp);    
+        }    
+    }  
+}  
+
+
+  1. package com.kiritor;  
+  2.   
+  3. import java.util.Arrays;  
+  4.   
+  5. /** 
+  6.  * 基于数组实现的队列 
+  7.  * @author Kiritor*/  
+  8. public class ArrayQueue<T> implements Queue<T>{  
+  9.   
+  10.     private T[] data;  
+  11.     private int size;//元素个数  
+  12.     private int front;//队列中第一个对象的位置  
+  13.     private int rear;//队列中当前对象的位置  
+  14.     public ArrayQueue() {  
+  15.         data = (T[]) new Object[10];  
+  16.         size = 0;  
+  17.         front =0;  
+  18.         rear = 0;  
+  19.     }  
+  20.     @Override  
+  21.     public void add(T t) {  
+  22.         if(isFull())  
+  23.         {  
+  24.             resize();  
+  25.             front = 0;  
+  26.         }  
+  27.         rear = (front+size)%data.length;  
+  28.         System.out.println(rear);  
+  29.         data[rear] = t;  
+  30.         size++;  
+  31.     }  
+  32.   
+  33.     @Override  
+  34.     public T remove() {  
+  35.          if (isEmpty()) {    
+  36.                 throw new RuntimeException("队列为空!");    
+  37.             }    
+  38.             T tempData = data[front];    
+  39.             data[front] = null;    
+  40.             //思考一下这里有必要进行除法运算吗?  
+  41.             
+  42.             front = (front + 1) % (data.length);  
+  43.             size--;    
+  44.             return tempData;    
+  45.     }  
+  46.   
+  47.     @Override  
+  48.     public int size() {  
+  49.         return size;  
+  50.     }  
+  51.   
+  52.     @Override  
+  53.     public boolean isEmpty() {  
+  54.         return size == 0;  
+  55.     }  
+  56.   
+  57.     @Override  
+  58.     public T front() {  
+  59.          if (isEmpty()) {    
+  60.                 throw new RuntimeException("队列为空!");    
+  61.             }    
+  62.             return data[front];  
+  63.     }  
+  64.   
+  65.     /** 
+  66.      * 判断当前队列是否已满 
+  67.      * @return*/  
+  68.     public boolean isFull()  
+  69.     {  
+  70.         return size == data.length;  
+  71.     }  
+  72.     /** 
+  73.      * 扩容，2倍 
+  74.      * */  
+  75.     public void resize()  
+  76.     {  
+  77.         /*注意重新扩容的时候并不需要去设置size 
+  78.          * 队列的大小并不能通过数组的大小直观的显示出来。 
+  79.          * 但是栈就可以直观的通过数组的大小显示出来*/  
+  80.         T[] tmp = (T[]) new Object[data.length*2];  
+  81.         System.arraycopy(data, 0, tmp, 0, data.length);    
+  82.         data = tmp;    
+  83.         tmp = null;//引用置为空，便于gc处理    
+  84.     }  
+  85.     public static void main(String[] args) {  
+  86.         ArrayQueue<String> q = new ArrayQueue<String>();    
+  87.         q.add("a");    
+  88.         q.add("b");    
+  89.         q.add("c");    
+  90.         q.add("d");    
+  91.         q.add("e");    
+  92.         q.add("f");    
+  93.         q.add("g");    
+  94.         q.add("h");    
+  95.         q.add("i");    
+  96.         q.add("j");         
+  97.         q.add("k");    
+  98.         q.add("l");    
+  99.         q.add("m");    
+  100.         while( !q.isEmpty() ){    
+  101.             String temp = q.remove();    
+  102.             System.out.println(temp);    
+  103.         }    
+  104.     }  
+  105. }  
+
+
+
+  1. package com.kiritor;  
+  2. /** 
+  3.  * 队列的链表实现 
+  4.  * @author Kiritor 
+  5.  * @param <T>*/  
+  6. public class LinkQueue<T> implements Queue<T> {  
+  7.   
+  8.     private Node head;  
+  9.     private Node rear;  
+  10.     private int size;  
+  11.     public LinkQueue() {  
+  12.         head = null;  
+  13.         rear = null;  
+  14.         size = 0;  
+  15.     }  
+  16.     class Node  
+  17.     {  
+  18.         T data;  
+  19.         Node next;  
+  20.         public Node() {  
+  21.             //无参构造  
+  22.         }  
+  23.         public Node(T t)  
+  24.         {  
+  25.             this.data = t;  
+  26.         }  
+  27.     }  
+  28.     /** 
+  29.      * 从队列的尾部插入结点*/  
+  30.     @Override  
+  31.     public void add(T t) {  
+  32.         Node node = new Node(t);  
+  33.         /*如果是队列则头部和尾部都执行Node*/  
+  34.         if(isEmpty())     
+  35.             head = node;  
+  36.         else  
+  37.            rear.next = node;  
+  38.         rear = node;  
+  39.         size++;//队列长度+1  
+  40.     }  
+  41.   
+  42.     /** 
+  43.      * 从队列的头部删除 
+  44.      * @return T*/  
+  45.     @Override  
+  46.     public T remove() {  
+  47.         T  tmp;  
+  48.         if(isEmpty()){  
+  49.              new NullPointerException("队列是空的!");  
+  50.              tmp = null;  
+  51.         }  
+  52.         else  
+  53.         {  
+  54.             if(null==head.next )  
+  55.                 rear = null;  
+  56.             tmp = head.data;  
+  57.             head = head.next;  
+  58.             size--;  
+  59.         }  
+  60.         return tmp;  
+  61.     }  
+  62.   
+  63.     @Override  
+  64.     public int size() {  
+  65.         return size;  
+  66.     }  
+  67.   
+  68.     @Override  
+  69.     public boolean isEmpty() {  
+  70.         return head == null;  
+  71.     }  
+  72.     /** 
+  73.      * 查看队列头部,不做任何处理*/  
+  74.     @Override  
+  75.     public T front() {  
+  76.         if(head !=null)  
+  77.            return head.data;  
+  78.         return null;  
+  79.     }  
+  80.     public static void main(String[] args) {  
+  81.         LinkQueue<String> q = new LinkQueue<String>();    
+  82.         q.add("a");    
+  83.         q.add("b");    
+  84.         q.add("c");    
+  85.         q.add("d");    
+  86.         q.add("e");    
+  87.         q.add("f");    
+  88.         q.add("g");    
+  89.         q.add("h");    
+  90.         q.add("i");    
+  91.         q.add("j");         
+  92.         q.add("k");    
+  93.         q.add("l");    
+  94.         q.add("m");    
+  95.         System.out.println(q.size);  
+  96.         while( !q.isEmpty() ){    
+  97.             String temp = q.remove();    
+  98.             System.out.println(temp);    
+  99.             System.out.println(q.size());  
+  100.         }    
+  101.     }  
+  102. }  
+
+ 
+ 
+ 
+ 
+ 
+ 
