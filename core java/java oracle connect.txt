@@ -1,0 +1,36 @@
+import java.sql.*; //引入java连接SQL的包  
+  
+/********** 
+ * java连接oracle数据库获取数据 
+ * @author 暖枫无敌 
+ *如果对于SID报错的话，请用以下SQL到数据库中查询对应的SID号,SQL如下： 
+   select instance_name from v$instance; --syit 
+ */  
+public class DBFactory {  
+ public static final String DBDRIVER = "oracle.jdbc.driver.OracleDriver"; //驱动  
+ public static final String DBURL = "jdbc:oracle:thin:@12.12.123.1:1521:syit"; //数据库URL  
+   
+ public static final String DBUSER = "czfxkh"; //用户名  
+ public static final String DBPASSWORD = "czfxkh"; //密码  
+   
+ public static void main(String args[]) throws Exception  
+ {  
+  Connection con = null;  
+  PreparedStatement ps = null;  
+  ResultSet rs = null;  
+    
+  String strSQL = "select * from SYS_MENU"; //SQL查询语句  
+  Class.forName(DBDRIVER); //注册Oracle驱动   
+  con = DriverManager.getConnection(DBURL,DBUSER,DBPASSWORD); //实例化数据库连接   
+  ps = con.prepareStatement(strSQL);  
+  rs = ps.executeQuery();  
+  while(rs.next())  
+  {  
+   System.out.println("菜单名:"+rs.getString(1));  
+  }  
+  rs.close(); //关闭数据集  
+  ps.close(); //关闭  
+  con.close(); //关闭链接  
+ }  
+   
+}  
