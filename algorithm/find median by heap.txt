@@ -1,0 +1,57 @@
+public class Solution {
+    private PriorityQueue<Integer> maxheap;
+    private PriorityQueue<Integer> minheap;
+    private int counter = 0;
+    public double findMedianSortedArrays(int A[], int B[]) {
+        if ((A == null && B == null) || (A.length == 0 && B.length == 0)) {
+            return 0.0;
+        }
+        int len = A.length + B.length;
+        if (len == 1) {
+            return A.length == 0 ? B[0] / 1.0 : A[0] / 1.0;
+        }
+        Comparator<Integer> comparator = new Comparator<Integer>(){
+            public int compare(Integer left, Integer right) {
+                return right.compareTo(left);
+            }
+        };
+        
+        maxheap = new PriorityQueue<Integer>(len - len / 2,comparator);
+        minheap = new PriorityQueue<Integer>(len / 2);
+        int i = 0;
+        for (i = 0 ; i < A.length && i < B.length; i++) {
+            addnumber(A[i]);
+            addnumber(B[i]);
+        }
+        while (i < A.length) {
+            addnumber(A[i]);
+            i++;
+        }
+        while (i < B.length) {
+            addnumber(B[i]);
+            i++;
+        }
+        if (counter % 2 != 0) {
+            return new Double(maxheap.peek());
+        }else {
+            return (maxheap.peek() + minheap.peek()) / 2.0;
+        }
+    }
+    private void addnumber(int num) {
+        maxheap.add(num);
+        if (counter % 2 == 0) {
+            if (minheap.isEmpty()) {
+                counter++;
+                return;
+            }else if (maxheap.peek() > minheap.peek()){
+                int maxroot = maxheap.poll();
+                int minroot = minheap.poll();
+                maxheap.add(minroot);
+                minheap.add(maxroot);
+            }
+        }else {
+            minheap.add(maxheap.poll());
+        }
+        counter++;
+    }
+}
